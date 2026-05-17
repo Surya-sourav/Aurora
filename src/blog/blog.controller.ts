@@ -1,77 +1,74 @@
-import { Controller , Delete, Get , Post, Put , Logger, Body, Param , Query, Patch } from "@nestjs/common";
-
-import { BlogService } from "./blog.service";
-import { createArticleDto, UpdateArticleDto } from "./request.dto";
-
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { Request } from 'express';
+import { BlogService } from './blog.service';
+import { CreateBlogDto } from './dto/create-blog.dto';
+import { UpdateBlogDto } from './dto/update-blog.dto';
+import { BlogQueryDto } from './dto/blog-query.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from 'src/auth/optional-jwt-auth.guard';
+import { ipFingerprint } from 'src/common/utils/ip-fingerprint';
 
 @Controller('blog')
-export class BlogController
-{
-    constructor(private readonly blogService : BlogService ){
-    }
+export class BlogController {
+  constructor(private readonly service: BlogService) {}
 
+  @Get()
+  @UseGuards(OptionalJwtAuthGuard)
+  async list(
+    @Query() query: BlogQueryDto,
+    @Req() req: Request & { user?: unknown },
+  ) {
+    const data = await this.service.list(query, Boolean(req.user));
+    return { success: true, ...data };
+  }
 
-  /* The API Endpoints for the blog will be : 
-    1. GET list of artciles ( filters such as publishing date or tags 
-    2. GET Single Article , specified the ID of the Article
-    3. POST a new article to the published 
-    4. DELETE a single Article specified by the ID 
-    5. update a single article based on the specified ID 
-*/ 
+  @Get('totals')
+  @UseGuards(JwtAuthGuard)
+  totals() {
+    return this.service.totals();
+  }
 
-    @Get('')
-    async getArticles()
-    {
-        // Implementation of the Get Endpoint for fetching all the articles from the DB 
-        const articles = await this.blogService.getArticles();
-        
-        return{
-            success : true,
-            Articles : articles
-        };
-    }
+  @Get(':slug')
+  @UseGuards(OptionalJwtAuthGuard)
+  async getBySlug(
+    @Param('slug') slug: string,
+    @Req() req: Request & { user?: unknown },
+  ) {
+    const blog = await this.service.getBySlug(slug, Boolean(req.user));
+    void this.service
+      .maybeIncrementBlogViews(blog.id, ipFingerprint(req), Boolean(req.user))
+      .catch(() => undefined);
+    return { success: true, blog };
+  }
 
-    @Get(':id')
-    async getSingleArticle( @Param('id') id : number){
-        
-        // Fetch a single article 
-        const article = await this.blogService.getArticlebyID(id);
-        return {
-            success : true,
-            article
-        }
-    }
+  @Post()
+  @UseGuards(JwtAuthGuard)
+  async create(@Body() dto: CreateBlogDto) {
+    const blog = await this.service.create(dto);
+    return { success: true, blog };
+  }
 
-    @Post('')
-    async postArticle(@Body() createArticleDto : createArticleDto)
-    {
-       const response =  await this.blogService.postArticle(createArticleDto);
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  async update(@Param('id') id: string, @Body() dto: UpdateBlogDto) {
+    const blog = await this.service.update(id, dto);
+    return { success: true, blog };
+  }
 
-        return {
-            success : true,
-            response
-        }
-    }
-
-    @Delete(':id')
-    async deleteArticle(@Param('id') id : number)
-    {
-        const response = await this.blogService.deleteArticlebyId(id);
-        return response;
-    }
-
-    
-    @Patch(':id')
-    async updateArticle( @Body() updateArticleDto : UpdateArticleDto , @Param('id')id : number ) 
-    {
-        //Update the Article 
-        const result = await this.blogService.updateArticlebyId(id , updateArticleDto);
-    
-        if(result) 
-            { return {
-            success : true,
-        }
-    }
-    }
-
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  remove(@Param('id') id: string) {
+    return this.service.remove(id);
+  }
 }
