@@ -6,6 +6,14 @@ export interface PersonalImage {
   size_bytes?: number;
 }
 
+export interface Socials {
+  github?: string;
+  twitter?: string;
+  linkedin?: string;
+  website?: string;
+  mastodon?: string;
+}
+
 export interface Personal {
   id: string;
   name: string;
@@ -15,6 +23,11 @@ export interface Personal {
   content: string;
   information: string;
   interests: string;
+  location: string;
+  availability: string;
+  now_doing: string;
+  socials: Socials;
+  stack: string[];
   portfolio_view_count: number;
   images: PersonalImage[];
   created_at: string;

@@ -27,8 +27,13 @@ export class BootstrapService implements OnApplicationBootstrap {
     const created = this.personalRepo.create({
       name,
       email,
-      heading: `Hi, I'm ${name}`,
-      sub_heading: 'Software engineer · building things on the internet',
+      heading: 'building reliable systems & writing about them',
+      sub_heading: 'software engineer',
+      location: '',
+      availability: 'open to collaboration',
+      now_doing: 'Working on Aurora — this site.',
+      socials: {},
+      stack: [],
       content:
         "## $ whoami\n\nWelcome to my corner of the internet. I write about systems, code, and the things I learn along the way.\n\n```bash\n> uptime\nrunning since 2019 · still curious\n```",
       information:

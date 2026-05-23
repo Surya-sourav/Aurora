@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { fetchPersonal, fetchBlogList } from '@/lib/api';
 import { Hero } from '@/components/home/Hero';
+import { NowCard } from '@/components/home/NowCard';
 import { PortfolioGallery } from '@/components/home/PortfolioGallery';
 import { MarkdownRenderer } from '@/components/markdown/MarkdownRenderer';
 import { ProseLayout, SectionLabel } from '@/components/layout/ProseLayout';
@@ -16,8 +17,10 @@ export default async function HomePage() {
   let error: string | null = null;
 
   try {
-    personal = await fetchPersonal();
-    recent = await fetchBlogList({ pageSize: 3 });
+    [personal, recent] = await Promise.all([
+      fetchPersonal(),
+      fetchBlogList({ pageSize: 3 }),
+    ]);
   } catch (e) {
     error = e instanceof Error ? e.message : 'unknown error';
   }
@@ -38,24 +41,37 @@ export default async function HomePage() {
     );
   }
 
+  const postCount = recent?.total ?? 0;
+
   return (
     <>
       <SiteHeader name={personal.name} />
       <ProseLayout>
-        <Hero personal={personal} />
-        <PortfolioGallery images={personal.images} />
+        <Hero personal={personal} postCount={postCount} />
+
+        {personal.now_doing && <NowCard>{personal.now_doing}</NowCard>}
+
         {personal.content && (
           <>
             <SectionLabel>about</SectionLabel>
             <MarkdownRenderer>{personal.content}</MarkdownRenderer>
           </>
         )}
+
+        {personal.images && personal.images.length > 1 && (
+          <>
+            <SectionLabel>photos</SectionLabel>
+            <PortfolioGallery images={personal.images} skipFirst />
+          </>
+        )}
+
         {personal.information && (
           <>
             <SectionLabel>elsewhere</SectionLabel>
             <MarkdownRenderer>{personal.information}</MarkdownRenderer>
           </>
         )}
+
         {recent && recent.items.length > 0 && (
           <>
             <SectionLabel>recent writing</SectionLabel>

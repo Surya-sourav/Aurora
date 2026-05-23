@@ -35,6 +35,27 @@ export class Personal {
   @Column({ type: 'text', default: '' })
   interests: string;
 
+  @Column({ type: 'varchar', length: 120, default: '' })
+  location: string;
+
+  @Column({ type: 'varchar', length: 120, default: '' })
+  availability: string;
+
+  @Column({ type: 'text', default: '' })
+  now_doing: string;
+
+  @Column({ type: 'jsonb', default: () => "'{}'::jsonb" })
+  socials: {
+    github?: string;
+    twitter?: string;
+    linkedin?: string;
+    website?: string;
+    mastodon?: string;
+  };
+
+  @Column({ type: 'text', array: true, default: () => "'{}'::text[]" })
+  stack: string[];
+
   @Column({ type: 'integer', default: 0 })
   portfolio_view_count: number;
 
