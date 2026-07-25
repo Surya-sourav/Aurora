@@ -1,6 +1,11 @@
 # Render blueprint — provisions the Aurora backend + frontend as two web
-# services with a single "New Blueprint" action. Secrets are left blank and
-# must be filled in via the Render dashboard on first deploy.
+# services with a single "New Blueprint" action.
+#
+# NOTE: The two services need to know each other's PUBLIC URLs
+# (NEXT_PUBLIC_API_URL, FRONTEND_ORIGIN). Render's blueprint spec doesn't
+# expose public URLs via `fromService`, so those two vars are left blank
+# here — set them in the dashboard after the first deploy and trigger a
+# redeploy. See README.md → "Deploy to Render" for the exact steps.
 #
 # Docs: https://render.com/docs/blueprint-spec
 
@@ -40,10 +45,7 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: FRONTEND_ORIGIN
-        fromService:
-          type: web
-          name: aurora-frontend
-          property: host
+        sync: false
 
   - type: web
     name: aurora-frontend
@@ -57,9 +59,6 @@ services:
       - key: PORT
         value: 3000
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: aurora-backend
-          property: host
+        sync: false
       - key: NEXT_PUBLIC_SITE_URL
         sync: false
