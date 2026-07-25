@@ -81,15 +81,8 @@ export function TerminalOverlay() {
   // lazy-fetch blog list on first open
   useEffect(() => {
     if (!open || blogs.length > 0) return;
-    fetch('/api/img/blog?pageSize=50', { cache: 'no-store' })
-      .catch(() => null)
-      .then(() =>
-        fetch(
-          (process.env.NEXT_PUBLIC_API_URL ?? '') + '/blog?pageSize=50',
-          { cache: 'no-store' },
-        ),
-      )
-      .then((r) => (r && r.ok ? r.json() : null))
+    fetch('/api/public/blog?pageSize=50', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.items) {
           setBlogs(

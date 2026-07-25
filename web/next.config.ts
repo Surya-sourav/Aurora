@@ -1,11 +1,9 @@
 import type { NextConfig } from 'next';
 import path from 'node:path';
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080';
-const apiParsed = new URL(apiUrl);
-
 const config: NextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   eslint: { ignoreDuringBuilds: true },
   outputFileTracingRoot: path.join(__dirname),
   serverExternalPackages: ['mermaid'],
@@ -18,19 +16,11 @@ const config: NextConfig = {
     return config;
   },
   images: {
+    // All Aurora <Image> uses pass `unoptimized`, so remotePatterns
+    // isn't needed. Keeping this permissive to be safe in edge cases.
     remotePatterns: [
-      {
-        protocol: apiParsed.protocol.replace(':', '') as 'http' | 'https',
-        hostname: apiParsed.hostname,
-        port: apiParsed.port || undefined,
-        pathname: '/images/**',
-      },
-      {
-        protocol: apiParsed.protocol.replace(':', '') as 'http' | 'https',
-        hostname: apiParsed.hostname,
-        port: apiParsed.port || undefined,
-        pathname: '/personal/images/**',
-      },
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
     ],
   },
 };
