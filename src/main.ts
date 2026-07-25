@@ -38,8 +38,8 @@ async function bootstrap() {
   }
 
   const port = parseInt(process.env.PORT ?? '8080', 10);
-  await app.listen(port);
-  Logger.log(`Aurora API running on http://localhost:${port}`, 'Bootstrap');
+  await app.listen(port, '0.0.0.0');
+  Logger.log(`Aurora API running on 0.0.0.0:${port}`, 'Bootstrap');
 }
 
 void bootstrap();

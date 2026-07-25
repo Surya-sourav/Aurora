@@ -23,6 +23,7 @@ import { BootstrapModule } from './bootstrap/bootstrap.module';
 import { CareerModule } from './career/career.module';
 import { CategoryModule } from './category/category.module';
 import { FeedsModule } from './feeds/feeds.module';
+import { HealthModule } from './health/health.module';
 import { ImageModule } from './image/image.module';
 import { NotesModule } from './notes/notes.module';
 import { PersonalModule } from './personal/personal.module';
@@ -51,10 +52,13 @@ import { SeriesModule } from './series/series.module';
         Note,
         Bookmark,
       ],
-      synchronize: process.env.NODE_ENV !== 'production',
+      // Default to auto-schema-sync. Opt out with DB_SYNCHRONIZE=false once
+      // you switch to TypeORM migrations.
+      synchronize: process.env.DB_SYNCHRONIZE !== 'false',
       logging: process.env.DB_LOGGING === 'true',
       ssl: { rejectUnauthorized: false },
     }),
+    HealthModule,
     AuthModule,
     BootstrapModule,
     PersonalModule,
