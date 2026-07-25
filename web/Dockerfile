@@ -12,6 +12,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
+# Guarantee public/ exists so the runner COPY doesn't fail on repos that
+# have no static assets yet.
+RUN mkdir -p public
+
 # NEXT_PUBLIC_SITE_URL is baked at build time into metadataBase / OG images.
 # NEXT_PUBLIC_API_URL is read only server-side at runtime and does NOT need
 # to be a build arg — the client uses /api/public/* proxy routes.

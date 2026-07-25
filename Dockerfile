@@ -19,10 +19,12 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev && npm cache clean --force
-
+# Copy node_modules from deps (keeps compiled native bindings like bcrypt),
+# then prune dev deps in place — no re-compile, no re-download.
+COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY package.json package-lock.json ./
+RUN npm prune --omit=dev && npm cache clean --force
 
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 aurora && \
