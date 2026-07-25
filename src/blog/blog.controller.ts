@@ -39,6 +39,13 @@ export class BlogController {
     return this.service.totals();
   }
 
+  @Get(':id/revisions')
+  @UseGuards(JwtAuthGuard)
+  async revisions(@Param('id') id: string) {
+    const items = await this.service.listRevisions(id);
+    return { success: true, items };
+  }
+
   @Get(':slug')
   @UseGuards(OptionalJwtAuthGuard)
   async getBySlug(

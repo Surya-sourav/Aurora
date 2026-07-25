@@ -43,7 +43,12 @@ export function KeyboardShortcuts() {
         const map: Record<string, string> = {
           h: '/',
           b: '/blog',
+          n: '/notes',
+          c: '/career',
           i: '/interests',
+          m: '/bookmarks',
+          u: '/uses',
+          w: '/now',
           a: '/admin',
         };
         const dest = map[k];
@@ -73,11 +78,11 @@ export function KeyboardShortcuts() {
             className="fixed inset-0 z-40 bg-black/50"
             onClick={() => setShowHelp(false)}
           />
-          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm bg-[--color-bg] border border-[--color-border] rounded-lg p-5 shadow-2xl">
+          <div className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-[--color-bg] border border-[--color-border] rounded-lg p-5 shadow-2xl">
             <h2 className="font-mono text-sm mb-4 text-[--color-fg]">
               <span className="text-[--color-faint]">## </span>shortcuts
             </h2>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1.5 max-h-[60vh] overflow-y-auto">
               {SHORTCUTS.map((s) => (
                 <li
                   key={s.keys}
@@ -89,8 +94,7 @@ export function KeyboardShortcuts() {
               ))}
             </ul>
             <p className="font-mono text-xs text-[--color-faint] mt-4">
-              theme: <span className="text-[--color-accent]">{theme}</span> ·
-              esc to close
+              theme: <span className="text-[--color-accent]">{theme}</span> · esc to close
             </p>
           </div>
         </>

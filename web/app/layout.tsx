@@ -5,6 +5,7 @@ import { ThemeScript } from '@/components/theme/ThemeScript';
 import { QueryProvider } from '@/components/QueryProvider';
 import { CommandPaletteMount } from '@/components/command/CommandPaletteMount';
 import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
+import { TerminalOverlay } from '@/components/terminal/TerminalOverlay';
 import { Toaster } from 'sonner';
 import './globals.css';
 
@@ -60,6 +61,7 @@ export default function RootLayout({
             {children}
             <CommandPaletteMount />
             <KeyboardShortcuts />
+            <TerminalOverlay />
             <Toaster
               richColors
               closeButton

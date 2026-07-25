@@ -8,6 +8,15 @@ const config: NextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
   outputFileTracingRoot: path.join(__dirname),
+  serverExternalPackages: ['mermaid'],
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      canvas: false,
+    };
+    return config;
+  },
   images: {
     remotePatterns: [
       {

@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { API_URL } from '@/lib/api';
+import { API_URL, fetchCategories, fetchSeriesList } from '@/lib/api';
 import { BlogEditor } from '@/components/admin/BlogEditor';
 import type { BlogDetail } from '@/lib/types';
 
@@ -29,7 +29,18 @@ export default async function EditBlogPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const blog = await fetchAdminBlog(slug);
+  const [blog, categories, seriesList] = await Promise.all([
+    fetchAdminBlog(slug),
+    fetchCategories().catch(() => []),
+    fetchSeriesList().catch(() => []),
+  ]);
   if (!blog) notFound();
-  return <BlogEditor mode="edit" initial={blog} />;
+  return (
+    <BlogEditor
+      mode="edit"
+      initial={blog}
+      categories={categories}
+      seriesList={seriesList}
+    />
+  );
 }

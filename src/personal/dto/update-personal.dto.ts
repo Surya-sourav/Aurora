@@ -72,6 +72,16 @@ export class UpdatePersonalDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(20000)
+  uses_page?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(20000)
+  now_page?: string;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(120)
   location?: string;
 

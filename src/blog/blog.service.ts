@@ -16,18 +16,34 @@ type BlogSummary = Omit<Blog, 'body'>;
 
 @Injectable()
 export class BlogService {
+  private lastScheduledCheck = 0;
+
   constructor(
     private readonly repo: BlogRepository,
     private readonly personalRepo: PersonalRepository,
   ) {}
 
+  private async maybeFlipScheduled() {
+    const now = Date.now();
+    if (now - this.lastScheduledCheck < 30_000) return;
+    this.lastScheduledCheck = now;
+    try {
+      await this.repo.flipScheduledDue(new Date());
+    } catch {
+      /* ignore */
+    }
+  }
+
   async list(query: BlogQueryDto, includeDrafts: boolean) {
+    await this.maybeFlipScheduled();
     const page = query.page ?? 1;
     const pageSize = query.pageSize ?? 10;
     const { items, total } = await this.repo.findManyPaginated({
       page,
       pageSize,
       tag: query.tag,
+      category: query.category,
+      series: query.series,
       search: query.search,
       includeDrafts,
     });
@@ -44,6 +60,7 @@ export class BlogService {
   }
 
   async getBySlug(slug: string, includeDrafts: boolean) {
+    await this.maybeFlipScheduled();
     const blog = await this.repo.findBySlug(slug, includeDrafts);
     if (!blog) throw new NotFoundException('Blog not found');
     return blog;
@@ -67,6 +84,8 @@ export class BlogService {
     const excerpt = dto.excerpt || deriveExcerpt(dto.body);
     const is_published = dto.is_published ?? false;
     const published_at = is_published ? new Date() : null;
+    const scheduled_publish_at =
+      dto.scheduled_publish_at ? new Date(dto.scheduled_publish_at) : null;
 
     return this.repo.create({
       heading: dto.heading,
@@ -81,12 +100,22 @@ export class BlogService {
       published_at,
       view_count: 0,
       personal_id: personal?.id ?? null,
+      category_id: dto.category_id ?? null,
+      series_id: dto.series_id ?? null,
+      series_order: dto.series_order ?? 0,
+      scheduled_publish_at,
+      mastodon_post_url: dto.mastodon_post_url ?? '',
     });
   }
 
   async update(id: string, dto: UpdateBlogDto) {
     const existing = await this.repo.findById(id);
     if (!existing) throw new NotFoundException('Blog not found');
+
+    // Snapshot before we mutate — captures the pre-edit state
+    if (existing.body) {
+      await this.repo.snapshotRevision(existing).catch(() => undefined);
+    }
 
     const patch: Partial<Blog> = {};
     if (dto.heading !== undefined) patch.heading = dto.heading;
@@ -96,6 +125,16 @@ export class BlogService {
     if (dto.tags !== undefined) patch.tags = dto.tags;
     if (dto.excerpt !== undefined) patch.excerpt = dto.excerpt;
     if (dto.is_published !== undefined) patch.is_published = dto.is_published;
+    if (dto.category_id !== undefined) patch.category_id = dto.category_id;
+    if (dto.series_id !== undefined) patch.series_id = dto.series_id;
+    if (dto.series_order !== undefined) patch.series_order = dto.series_order;
+    if (dto.mastodon_post_url !== undefined)
+      patch.mastodon_post_url = dto.mastodon_post_url;
+    if (dto.scheduled_publish_at !== undefined) {
+      patch.scheduled_publish_at = dto.scheduled_publish_at
+        ? new Date(dto.scheduled_publish_at)
+        : null;
+    }
 
     if (dto.body !== undefined && dto.body !== existing.body) {
       patch.reading_time_minutes = computeReadingTime(dto.body);
@@ -141,5 +180,9 @@ export class BlogService {
 
   totals() {
     return this.repo.totals();
+  }
+
+  listRevisions(blogId: string) {
+    return this.repo.listRevisions(blogId);
   }
 }

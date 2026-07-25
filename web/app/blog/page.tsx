@@ -1,4 +1,9 @@
-import { fetchBlogList, fetchTags, fetchPersonal } from '@/lib/api';
+import {
+  fetchBlogList,
+  fetchCategories,
+  fetchPersonal,
+  fetchTags,
+} from '@/lib/api';
 import { SearchAndFilter } from '@/components/blog/SearchAndFilter';
 import { ProseLayout, SectionLabel } from '@/components/layout/ProseLayout';
 import { SiteHeader } from '@/components/layout/SiteHeader';
@@ -11,20 +16,23 @@ export const metadata: Metadata = { title: 'blog' };
 export default async function BlogIndex({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string; page?: string }>;
+  searchParams: Promise<{ tag?: string; category?: string; page?: string }>;
 }) {
   const sp = await searchParams;
   let blogs;
   let tags;
+  let categories;
   let personal;
   try {
-    [blogs, tags, personal] = await Promise.all([
+    [blogs, tags, categories, personal] = await Promise.all([
       fetchBlogList({
         tag: sp.tag,
+        category: sp.category,
         page: sp.page ? parseInt(sp.page, 10) : 1,
         pageSize: 50,
       }),
       fetchTags(),
+      fetchCategories(),
       fetchPersonal().catch(() => null),
     ]);
   } catch {
@@ -45,8 +53,16 @@ export default async function BlogIndex({
     <>
       <SiteHeader name={personal?.name ?? 'aurora'} />
       <ProseLayout>
-        <SectionLabel>blog · {blogs.total} posts</SectionLabel>
-        <SearchAndFilter items={blogs.items} tags={tags} activeTag={sp.tag} />
+        <SectionLabel>
+          blog · {blogs.total} {blogs.total === 1 ? 'post' : 'posts'}
+        </SectionLabel>
+        <SearchAndFilter
+          items={blogs.items}
+          tags={tags}
+          categories={categories}
+          activeTag={sp.tag}
+          activeCategory={sp.category}
+        />
       </ProseLayout>
       <SiteFooter />
     </>

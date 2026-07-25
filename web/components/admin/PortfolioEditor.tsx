@@ -26,6 +26,8 @@ export function PortfolioEditor({ personal }: { personal: Personal }) {
     content: personal.content,
     information: personal.information,
     interests: personal.interests,
+    uses_page: personal.uses_page ?? '',
+    now_page: personal.now_page ?? '',
   });
 
   const stack = useMemo(
@@ -53,6 +55,8 @@ export function PortfolioEditor({ personal }: { personal: Personal }) {
         content: form.content,
         information: form.information,
         interests: form.interests,
+        uses_page: form.uses_page,
+        now_page: form.now_page,
       };
       const res = await fetch('/api/admin/proxy/personal', {
         method: 'PATCH',
@@ -170,14 +174,42 @@ export function PortfolioEditor({ personal }: { personal: Personal }) {
 
       <section className="space-y-4">
         <h3 className="font-mono text-sm text-[--color-fg]">
-          <span className="text-[--color-faint]">## </span>now
+          <span className="text-[--color-faint]">## </span>now (home page card)
         </h3>
-        <Field label="currently working on" hint="markdown · short">
+        <Field label="currently working on" hint="markdown · short · shows on home page">
           <Textarea
             value={form.now_doing}
             onChange={(e) => set('now_doing', e.target.value)}
             rows={4}
-            placeholder={'building Aurora — a portfolio + blog platform.\\n\\nreading: SICP'}
+            placeholder={'building Aurora — a portfolio + blog platform.\n\nreading: SICP'}
+          />
+        </Field>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="font-mono text-sm text-[--color-fg]">
+          <span className="text-[--color-faint]">## </span>/now page
+        </h3>
+        <Field label="/now" hint="longer version — the dedicated /now page">
+          <Textarea
+            value={form.now_page}
+            onChange={(e) => set('now_page', e.target.value)}
+            rows={10}
+            placeholder={'## work\n\n- feature X\n- migration to Y\n\n## reading\n\n- book Z'}
+          />
+        </Field>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="font-mono text-sm text-[--color-fg]">
+          <span className="text-[--color-faint]">## </span>/uses page
+        </h3>
+        <Field label="/uses" hint="editor · terminal · keyboard · coffee — the tools you reach for">
+          <Textarea
+            value={form.uses_page}
+            onChange={(e) => set('uses_page', e.target.value)}
+            rows={10}
+            placeholder={'## editor\n\n- neovim + telescope\n\n## terminal\n\n- ghostty + fish\n\n## dev\n\n- typescript · rust · postgres'}
           />
         </Field>
       </section>

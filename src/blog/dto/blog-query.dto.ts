@@ -8,6 +8,14 @@ export class BlogQueryDto {
 
   @IsOptional()
   @IsString()
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  series?: string;
+
+  @IsOptional()
+  @IsString()
   search?: string;
 
   @IsOptional()

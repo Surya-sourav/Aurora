@@ -190,3 +190,56 @@
   z-index: 50;
   pointer-events: none;
 }
+
+/* Callouts (MDX-style: > [!note], [!tip], [!warn], [!info], [!danger]) */
+.prose-aurora .callout {
+  border-left: 3px solid var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  padding: 0.75em 1em 0.75em 1.25em;
+  border-radius: 0 6px 6px 0;
+  margin: 1.5em 0;
+  font-style: normal;
+  color: var(--color-fg);
+}
+.prose-aurora .callout > p { margin: 0.25em 0; }
+.prose-aurora .callout > :first-child { margin-top: 0; }
+.prose-aurora .callout > :last-child { margin-bottom: 0; }
+.prose-aurora .callout::before {
+  content: attr(data-kind);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  display: block;
+  margin-bottom: 0.4em;
+  font-weight: 600;
+}
+.prose-aurora .callout-warn,
+.prose-aurora .callout-warning {
+  border-left-color: oklch(0.72 0.18 70);
+  background: color-mix(in oklch, oklch(0.72 0.18 70) 8%, transparent);
+}
+.prose-aurora .callout-warn::before { color: oklch(0.72 0.18 70); }
+.prose-aurora .callout-danger {
+  border-left-color: var(--color-danger);
+  background: color-mix(in oklch, var(--color-danger) 8%, transparent);
+}
+.prose-aurora .callout-danger::before { color: var(--color-danger); }
+.prose-aurora .callout-info {
+  border-left-color: oklch(0.75 0.14 220);
+  background: color-mix(in oklch, oklch(0.75 0.14 220) 8%, transparent);
+}
+.prose-aurora .callout-info::before { color: oklch(0.75 0.14 220); }
+
+/* Wikilinks */
+.prose-aurora .wikilink {
+  color: var(--color-accent);
+  border-bottom: 1px dashed var(--color-accent);
+  text-decoration: none;
+}
+.prose-aurora .wikilink::before { content: "[["; opacity: 0.5; }
+.prose-aurora .wikilink::after { content: "]]"; opacity: 0.5; }
+
+/* KaTeX color fix in dark mode */
+.prose-aurora .katex { color: var(--color-fg); }

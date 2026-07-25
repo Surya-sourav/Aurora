@@ -35,6 +35,12 @@ export class Personal {
   @Column({ type: 'text', default: '' })
   interests: string;
 
+  @Column({ type: 'text', default: '' })
+  uses_page: string;
+
+  @Column({ type: 'text', default: '' })
+  now_page: string;
+
   @Column({ type: 'varchar', length: 120, default: '' })
   location: string;
 

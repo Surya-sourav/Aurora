@@ -12,6 +12,8 @@ import {
 } from 'typeorm';
 import { Personal } from './personal.entity';
 import { Image } from './image.entity';
+import { Category } from './category.entity';
+import { Series } from './series.entity';
 
 @Entity('blog')
 @Index(['is_published', 'published_at'])
@@ -59,6 +61,35 @@ export class Blog {
   @ManyToOne(() => Personal, (p) => p.blogs, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'personal_id' })
   personal: Personal | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  category_id: string | null;
+
+  @ManyToOne(() => Category, (c) => c.blogs, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'category_id' })
+  category: Category | null;
+
+  @Column({ type: 'uuid', nullable: true })
+  series_id: string | null;
+
+  @ManyToOne(() => Series, (s) => s.blogs, {
+    onDelete: 'SET NULL',
+    nullable: true,
+  })
+  @JoinColumn({ name: 'series_id' })
+  series: Series | null;
+
+  @Column({ type: 'integer', default: 0 })
+  series_order: number;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  scheduled_publish_at: Date | null;
+
+  @Column({ type: 'varchar', length: 500, default: '' })
+  mastodon_post_url: string;
 
   @OneToMany(() => Image, (img) => img.blog)
   images: Image[];

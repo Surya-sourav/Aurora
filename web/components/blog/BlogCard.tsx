@@ -1,10 +1,16 @@
 import Link from 'next/link';
-import type { BlogSummary } from '@/lib/types';
+import type { BlogSummary, Category } from '@/lib/types';
 import { TagChip } from './TagChip';
+import { CategoryChip } from './CategoryChip';
 import { ReadingTime } from './ReadingTime';
 import { ViewCountBadge } from '@/components/layout/ViewCountBadge';
 
-export function BlogCard({ blog }: { blog: BlogSummary }) {
+interface Props {
+  blog: BlogSummary;
+  category?: Pick<Category, 'name' | 'slug' | 'color'>;
+}
+
+export function BlogCard({ blog, category }: Props) {
   const date = blog.published_at
     ? new Date(blog.published_at).toLocaleDateString('en-US', {
         year: 'numeric',
@@ -33,6 +39,7 @@ export function BlogCard({ blog }: { blog: BlogSummary }) {
         )}
       </Link>
       <div className="flex items-center gap-2 mt-3 flex-wrap">
+        {category && <CategoryChip category={category} />}
         {blog.tags.map((t) => (
           <TagChip key={t} tag={t} />
         ))}
