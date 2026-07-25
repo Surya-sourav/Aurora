@@ -1,4 +1,5 @@
-# Aurora
+# Aurora : A Robust swiss-knife App for Technical Blogging
+<img width="200" height="200" alt="option-3-the-pure-typographic-angle-focus-on-sheer" src="https://github.com/user-attachments/assets/afe5d2ed-5d52-477b-a35f-c0d523de4b12" />
 
 **A self-hostable portfolio and technical blog platform.**
 
